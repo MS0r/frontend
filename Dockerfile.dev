@@ -1,0 +1,16 @@
+FROM node:latest
+
+RUN apt update &&\
+    apt install -y git openssh-client curl gnupg2 --no-install-recommends &&\
+    apt clean && rm -rf /var/lib/apt/lists/*
+
+COPY package*.json ./
+RUN npm install -g vite @vitejs/plugin-vue
+
+RUN npm install -g @vue/cli
+
+RUN npm install
+
+EXPOSE 5173
+
+WORKDIR /frontend

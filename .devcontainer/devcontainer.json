@@ -1,0 +1,28 @@
+{
+	"name": "Erlang-Application-Front",
+
+	"dockerComposeFile": [
+		"../docker-compose.dev.yml"
+	],
+
+	"service": "front-dev",
+
+	"workspaceFolder": "/workspace",
+
+	"features": {
+		"ghcr.io/devcontainers/features/git:1": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {}
+	},
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+                "vue.volar"
+			]
+		}
+	},
+	"forwardPorts": [5173],
+    "postCreateCommand": "npm install",
+	"mounts" : ["source=${localWorkspaceFolder},target=/workspace,type=bind"],
+	"remoteUser": "node"
+}
