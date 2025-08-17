@@ -4,18 +4,18 @@
     <pre><code>{{ code }}</code></pre>
     <button @click="runCode">Ejecutar</button>
     <button @click="copy">Copiar</button>
-    <div v-if="output">
-      <pre>{{ output }}</pre>
-    </div>
+    <pre v-if="output" class="output">{{ output }}</pre>
   </div>
 </template>
 
 <script setup>
+import { useRoute } from 'vue-router';
 import { compileErlang } from '@/composables/compileErlang';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const output = ref('');
 const props = defineProps(['code'])
+const route = useRoute();
 
 async function runCode(){
   try{
@@ -30,12 +30,14 @@ async function runCode(){
   }
 }
 
+watch(() => route.fullPath, () => {
+  output.value = ''
+})
 </script>
 
 <style>
 .code-box {
-  background-color: #1e1e1e;
-  color: #d4d4d4;
+  background-color: #252525;
   padding: 1rem;
   border-radius: 5px;
   margin-top: 1rem;
@@ -43,8 +45,13 @@ async function runCode(){
 }
 
 .code-box pre {
-  font-family: monospace;
   white-space: pre-wrap;
+  font-size: 16px;
+}
+
+.output {
+  background-color: #383838ff;
+  padding: 15px;
 }
 
 .code-box button {

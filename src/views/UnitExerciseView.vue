@@ -3,7 +3,7 @@
   <div class="content">
     <div v-if="exercise">
       <h1>{{ exercise.title }}</h1>
-        <p>{{ exercise.description }}</p>
+        <p v-html="exercise.description"></p>
         <div class="editor-exercise">
             <div class="monaco-container" ref="editorContainer"></div>
             <div class="editor-box output">
@@ -26,7 +26,9 @@
 import * as monaco from 'monaco-editor';
 import { onMounted, ref } from 'vue';
 import { testErlang } from '@/composables/compileErlang';
+import MarkdownIt from 'markdown-it';
 
+const md = MarkdownIt();
 const editorContainer = ref(null);
 let editorInstance = null
 const output = ref('');
@@ -51,12 +53,7 @@ onMounted(() => {
   });
 
   editorInstance = monaco.editor.create(editorContainer.value, {
-    value: `% hello world program
--module(helloworld).
--export([start/0]).
-
-start() ->
-    io:format("Hello, world!~n").`,
+    value: `${props.exercise.exercise_schema}`,
     language: 'erlang',
     theme: 'vs-dark',
     minimap: { enabled: false }, // Hide minimap
@@ -70,11 +67,15 @@ async function run(){
   try{
     const code = editorInstance.getValue();
     const result = await testErlang(code, props.exercise.id);
-    output.value = result.output || 'Sin salida';
+    output.value = result.result || 'Sin salida';
   } catch (error) {
-    output.value = 'Error: ' + e.message;
+    output.value = 'Error: ' + error.message;
   }
 }
+
+function renderMarkdown(text) {
+  return md.render(text)
+} 
 </script>
 
 <style scoped>
@@ -90,23 +91,16 @@ async function run(){
   gap: 1rem;
 }
 
-.editor-box {
-  flex: 1;
-  display: flex;
-  background: #1e1e1e;
-  flex-direction: column;
-}
-
 .monaco-container {
   height: 300px;
-  width: 700px; 
+  width: 450px; 
   min-width: 400px;
   max-width: 100%;
   flex: 1;
 }
 
 .editor-box {
-  background: #1e1e1e;
+  background: #252525;
   color: white;
   flex: 1;
   padding: 1rem;
@@ -116,11 +110,16 @@ async function run(){
 }
 
 .output {
-  width: 250px; /* Or any value you want */
-  min-width: 200px;
+  width: 250px;
+  display: flex;
+  min-width: 350px;
   max-width: 100%;
   flex: none;
+}
+
+.editor-box pre{
   white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .content {
@@ -133,9 +132,8 @@ async function run(){
 }
 
 .content > div {
-  max-width: 700px;
+  max-width: 900px;
   width: 100%;
-  transform: translateX(-30px); /* slight offset to the left */
 }
 
 </style>

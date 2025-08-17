@@ -2,7 +2,12 @@
 <template>
   <header class="header">
     <div>
-      <button @click="$router.push('/forum')">Foro</button>
+      <button 
+        v-if="showForumBtn"
+      @click="$router.push('/forum')"
+      >
+      Foro
+      </button>
       <button 
         v-if="showEditorBtn"
         @click="$router.push('/editor')"
@@ -14,6 +19,18 @@
         @click="$router.push('/course/1/unit/1/subunit/1')"
       >
       Tutorial
+      </button>
+    </div>
+    <div class="search-container" v-if="$route.name === 'forum-home'">
+      <input
+      type="text"
+      placeholder="Buscar Pregunta"
+      :value="props.modelValue"
+      @input="emit('update:modelValue',$event.target.value)"
+      class="search-input"
+      />
+      <button class="search-btn" @click="emit('search')">
+        Buscar
       </button>
     </div>
     <div v-if="!user">
@@ -38,10 +55,6 @@
         </div>
         <div class="stats">
           <div class="grey-back">
-            <p><strong>Tiempo invertido:</strong></p>
-            <p>00:00:00</p>
-          </div>
-          <div class="grey-back">
             <p><strong>Cuestionarios Completados:</strong></p>
             <p>{{progress.completed_quizzes}} / {{progress.total_quizzes}}</p>
           </div>
@@ -59,13 +72,17 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAuth } from '@/composables/useAuth';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const props = defineProps({
   showEditorBtn: Boolean,
   showTutorialBtn: Boolean,
+  showForumBtn: Boolean,
+  modelValue: String
 });
 
+const emit = defineEmits(["update:modelValue"]);
+const route = useRoute();
 const router = useRouter();
 const { user } = useAuth();
 const progress = ref({})
@@ -192,6 +209,21 @@ onMounted(getProgress)
   background-color: #f3f2f2ff;
   margin-bottom: 1rem;
   padding: 10px;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 700px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  background-color: white;
+  color: black;
 }
 
 </style>

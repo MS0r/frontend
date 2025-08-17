@@ -5,7 +5,6 @@ const user = ref(null);
 export function useAuth() {
   const fetchUser = async () => {
     const token = localStorage.getItem('token');
-    console.log(token)
     if (!token) return;
 
     try {

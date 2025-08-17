@@ -79,6 +79,52 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+code,
+pre {
+  background-color: #252525;
+  color: #f8f8f2;
+  padding: 4px 2px;
+  border-radius: 5px;
+  font-family: monospace;
+}
+
+pre {
+  display: block;
+  overflow-x: auto;
+  margin-bottom: 1em;
+  padding: 1em;
+}
+
+text-code {
+  background-color: #ebebeb;
+  color: #000000;
+  padding: 2px 4px;
+  border-radius: 5px;
+  font-family: monospace;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1.5em;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #eee;
+}
+
+hr {
+  margin: 2em 0;
+  border: none;
+  border-top: 1px solid #ccc;
+}
 
 /* Card Utility (optional) */
 .card {

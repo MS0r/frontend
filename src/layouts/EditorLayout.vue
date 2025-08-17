@@ -1,6 +1,6 @@
 <template>
   <div class="editor-layout">
-    <Header :show-tutorial-btn="true"/>
+    <Header :show-tutorial-btn="true" :show-forum-btn="true"/>
 
     <div class="editor-toolbar">
       <button @click="run">Ejecutar</button>
@@ -34,16 +34,27 @@ onMounted(() => {
     tokenizer: {
       root: [
         [/%.*$/, 'comment'],
-        [/\b(module|export|import|fun|case|of|when|end|receive|after|try|catch|throw|if)\b/, 'keyword'],
-        [/[A-Z][A-Za-z0-9_]*/, 'type.identifier'], // module names, atoms
-        [/[a-z][A-Za-z0-9_]*/, 'identifier'], // variables
-        [/".*?"/, 'string'],
+        [/\b(module|export|import|fun|case|of|when|end|receive|after|try|catch|throw|if|compile|record|spec)\b/, 'keyword'],
+        //[/[a-z][A-Za-z0-9_]*/, 'type.identifier'], // module names, atoms
+        [/[A-Z][A-Za-z0-9_]*/, 'variable'],// variables
+        [/"([^"\\]|\\.)*"/, 'string'],
         [/[0-9]+/, 'number'],
         [/[(),.;]/, 'delimiter'],
         [/->/, 'operator'],
+        [/(?<=-export\(\[)[a-z][A-Za-z0-9_]*(?=\/\d)/, 'function.name'],
+        [/\b[a-z][A-Za-z0-9_]*(?=\()/, 'function.name'],
       ],
     },
   });
+
+  monaco.editor.defineTheme('erlangFunctions', {
+  base: 'vs-dark',
+  inherit: true,
+  rules: [
+    { token: 'function.name', foreground: 'FFCC00', fontStyle: 'bold' }
+  ]
+  });
+  
 
   editorInstance = monaco.editor.create(editorContainer.value, {
     value: `% hello world program
@@ -56,12 +67,14 @@ start() ->
     theme: 'vs-dark',
     automaticLayout: true,
   });
+
+  
 });
 
 const run = async () => {
   try {
     const code = editorInstance.getValue();
-    console.log(code);
+    console.log("enviando")
     const result = await compileErlang(code);
     if(result.status === "ok"){
       output.value = result.result || 'Sin salida';

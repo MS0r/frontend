@@ -1,7 +1,7 @@
 <!-- src/layouts/CourseLayout.vue -->
 <template>
   <div class="layout">
-    <Header :show-editor-btn="true"/>
+    <Header :show-editor-btn="true" :show-forum-btn="true"/>
     <div class="main">
       <Sidebar  :courseTitle="courseTitle" :units="store.units" />
       <RouterView v-if="selectedSubunit" :subunit="selectedSubunit" />
@@ -32,7 +32,6 @@ const fetchCourseTitle = async () => {
 }
 
 const setSelectedSubunit = () => {
-  console.log('store.units:', store.units)
   selectedExercise.value = null
   selectedSubunit.value = null
 
