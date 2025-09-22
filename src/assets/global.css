@@ -20,10 +20,11 @@
 }
 
 /* Body Reset and Base Layout */
-body {
+html, body, #app {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  height: 100%;
+  overflow-y: auto; /* prevent extra vertical scrollbar on root */
   background-color: #ffffff;
   color: #213547;
 }
@@ -89,10 +90,9 @@ pre {
 }
 
 pre {
-  display: block;
-  overflow-x: auto;
-  margin-bottom: 1em;
+  margin: 0; /* remove default bottom margin */
   padding: 1em;
+  overflow-y: auto; /* allow scrolling inside pre if needed */
 }
 
 text-code {

@@ -5,14 +5,14 @@
     <ul>
       <li v-for="unit in units" :key="unit.id">
         <details>
-          <summary>{{ unit.title }}</summary>
+          <summary>{{ unit.title }} <span v-if="unit.exercise && submissions_id.includes(unit.exercise.id)">✔️</span></summary>
           <ul>
             <li v-for="sub in unit.subunits" :key="sub.id">
               <router-link
                 :to="`/course/1/unit/${unit.order}/subunit/${sub.order}`"
               >
                 {{ sub.title }}
-                <span v-if="quiz_passes_id.includes(sub.id)">✔️</span>
+                <span v-if="quiz_passes_id.includes(sub.quiz.id)">✔️</span>
               </router-link>
             </li>
             <li>
@@ -20,7 +20,7 @@
                 :to="`/course/1/unit/${unit.order}/exercise`"
               >
                 Ejercicio
-                <span v-if="submissions_id.includes(unit.id)">✔️</span>
+                <span v-if="unit.exercise && submissions_id.includes(unit.exercise.id)">✔️</span>
               </router-link>
             </li>
           </ul>
@@ -41,10 +41,9 @@ let submissions_id = ref([]);
 onMounted(async () =>{
   await fetchUser();
   if (user.value) {
-  quiz_passes_id.value = user.value.quiz_passes.map((x) => x.quiz_id);
-  submissions_id.value = user.value.submissions.map((x) => x.exercise_id);
+  quiz_passes_id.value = Object.values(user.value.quiz_passes).map((x) => x.quiz_id);
+  submissions_id.value = Object.values(user.value.submissions).map((x) => x.exercise_id);
 }
-  console.log(quiz_passes_id)
 })
 
 

@@ -3,9 +3,9 @@
   <div class="layout">
     <Header :show-editor-btn="true" :show-forum-btn="true"/>
     <div class="main">
-      <Sidebar  :courseTitle="courseTitle" :units="store.units" />
-      <RouterView v-if="selectedSubunit" :subunit="selectedSubunit" />
-      <RouterView v-else-if="selectedExercise" :exercise="selectedExercise" />
+      <Sidebar :key="remountSidebar" :courseTitle="courseTitle" :units="store.units" />
+      <RouterView v-if="selectedSubunit" :subunit="selectedSubunit" @quizSuccess="resetSidebar"/>
+      <RouterView v-else-if="selectedExercise" :exercise="selectedExercise" @exerciseSuccess="resetSidebar"/>
       <Rightbar/>
     </div>
   </div>
@@ -24,9 +24,16 @@ const courseTitle = ref(null)
 const selectedSubunit = ref(null)
 const selectedExercise = ref(null)
 const store = useCourseStore()
+const API_VITE_URL = import.meta.env.VITE_API_URL
+const remountSidebar = ref(0)
+
+function resetSidebar() {
+  remountSidebar.value++
+  console.log('reset sidebar' + remountSidebar.value)
+}
 
 const fetchCourseTitle = async () => {
-  const res = await fetch('http://localhost:8080/api/course/1')
+  const res = await fetch(`${API_VITE_URL}/course/1`)
   const course = await res.json()
   courseTitle.value = course.title
 }

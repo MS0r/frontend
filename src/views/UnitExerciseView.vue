@@ -5,15 +5,24 @@
       <h1>{{ exercise.title }}</h1>
         <p v-html="exercise.description"></p>
         <div class="editor-exercise">
-            <div class="monaco-container" ref="editorContainer"></div>
+            <div>
+              <div class="monaco-container" ref="editorContainer"></div>
+              <div class="nav-buttons">
+                <button 
+                  class="nav-btn" 
+                  @click="run" 
+                  :disabled="loading"
+                >
+                  {{ loading ? 'Ejecutando...' : 'Ejecutar Test' }}
+                </button>
+                <button class="nav-btn" @click="copyCode">Copiar</button>
+              </div>
+            </div>
             <div class="editor-box output">
-                <pre>{{ output }}</pre>
+                <pre>{{ loading ? 'Ejecutando Tests...' : output }}</pre>
             </div>
         </div>
-        <div class="nav-buttons">
-          <button class="nav-btn" @click="run">Ejecutar Test</button>
-          <button class="nav-btn" @click="copy">Copiar</button>
-        </div>
+
     </div>
     <div v-else>
       <h2>Seleccione una subunidad</h2>
@@ -26,13 +35,23 @@
 import * as monaco from 'monaco-editor';
 import { onMounted, ref } from 'vue';
 import { testErlang } from '@/composables/compileErlang';
-import MarkdownIt from 'markdown-it';
 
-const md = MarkdownIt();
 const editorContainer = ref(null);
 let editorInstance = null
 const output = ref('');
+const loading = ref(false);   // 🔹 Added loading state
 const props = defineProps(['exercise']);
+const emit = defineEmits(['exerciseSuccess'])
+
+async function copyCode() {
+  try{
+    await navigator.clipboard.writeText(editorInstance.getValue());
+    alert('Código copiado al portapapeles');
+  } catch (err) {
+    alert('Error al copiar el código: ' + err);
+  }
+}
+
 
 onMounted(() => {
   monaco.languages.register({ id: 'erlang' });
@@ -41,13 +60,14 @@ onMounted(() => {
     tokenizer: {
       root: [
         [/%.*$/, 'comment'],
-        [/\b(module|export|import|fun|case|of|when|end|receive|after|try|catch|throw|if)\b/, 'keyword'],
-        [/[A-Z][A-Za-z0-9_]*/, 'type.identifier'], // module names, atoms
-        [/[a-z][A-Za-z0-9_]*/, 'identifier'], // variables
-        [/".*?"/, 'string'],
+        [/\b(module|export|import|fun|case|of|when|end|receive|after|try|catch|throw|if|compile|record|spec)\b/, 'keyword'],
+        [/[A-Z][A-Za-z0-9_]*/, 'variable'],// variables
+        [/"([^"\\]|\\.)*"/, 'string'],
         [/[0-9]+/, 'number'],
         [/[(),.;]/, 'delimiter'],
         [/->/, 'operator'],
+        [/(?<=-export\(\[)[a-z][A-Za-z0-9_]*(?=\/\d)/, 'function.name'],
+        [/\b[a-z][A-Za-z0-9_]*(?=\()/, 'function.name'],
       ],
     },
   });
@@ -56,26 +76,35 @@ onMounted(() => {
     value: `${props.exercise.exercise_schema}`,
     language: 'erlang',
     theme: 'vs-dark',
-    minimap: { enabled: false }, // Hide minimap
-    lineNumbersMinChars: 2,      // Make line numbers column smaller
-    lineNumbers: "on",           // Show line numbers
+    minimap: { enabled: false },
+    lineNumbersMinChars: 2,
+    lineNumbers: "on",
     fontSize: 14,  
+    wordWrap: 'on',
+    scrollbar: {
+      vertical: 'auto',
+      horizontal: 'auto',
+      alwaysConsumeMouseWheel: false,
+    }
   });
 });
 
 async function run(){
   try{
+    loading.value = true;         // 🔹 Start loading
+    output.value = '';            // clear previous output
     const code = editorInstance.getValue();
     const result = await testErlang(code, props.exercise.id);
     output.value = result.result || 'Sin salida';
+    if (result.test_results.failures === 0){
+      emit("exerciseSuccess")
+    }
   } catch (error) {
     output.value = 'Error: ' + error.message;
+  } finally {
+    loading.value = false;        // 🔹 Stop loading
   }
 }
-
-function renderMarkdown(text) {
-  return md.render(text)
-} 
 </script>
 
 <style scoped>
@@ -85,6 +114,11 @@ function renderMarkdown(text) {
   gap: 1rem;
 }
 
+.nav-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .editor-exercise {
   display: flex;
   background: #ffffffff;
@@ -92,9 +126,8 @@ function renderMarkdown(text) {
 }
 
 .monaco-container {
-  height: 300px;
+  height: 500px;
   width: 450px; 
-  min-width: 400px;
   max-width: 100%;
   flex: 1;
 }
@@ -107,6 +140,8 @@ function renderMarkdown(text) {
   overflow: auto;
   font-family: monospace;
   font-size: 14px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .output {
@@ -135,5 +170,4 @@ function renderMarkdown(text) {
   max-width: 900px;
   width: 100%;
 }
-
 </style>

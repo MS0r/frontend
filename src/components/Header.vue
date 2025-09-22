@@ -51,7 +51,7 @@
           <div class="progress-bar">
             <div class="progress-fill" :style="{  width : (progress.progress || 0) + '%'}"></div>
           </div>
-          <span class="small">{{progress.progress}}% Completado</span>
+          <span class="small">{{progress.progress.toFixed(2)}}% Completado</span>
         </div>
         <div class="stats">
           <div class="grey-back">
@@ -81,11 +81,12 @@ const props = defineProps({
   modelValue: String
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue","search"]);
 const route = useRoute();
 const router = useRouter();
 const { user } = useAuth();
 const progress = ref({})
+const API_VITE_URL = import.meta.env.VITE_API_URL
 
 const logout = () => {
   localStorage.removeItem('token');
@@ -93,21 +94,23 @@ const logout = () => {
   router.push('/login');
 };
 
-const showDropdown = ref(false); // <-- dropdown visibility
+const showDropdown = ref(false);
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
 };
 
 const getProgress = async () => {
   const token = localStorage.getItem('token');
-  const res = await fetch("http://localhost:8080/api/user/progress/1", {
-    headers: {
-      'Authorization': `Token ${token}`
-    }
-  });
+  if(token) {
+    const res = await fetch(`${API_VITE_URL}/user/progress/1`, {
+      headers: {
+        'Authorization': `Token ${token}`
+      }
+    });
 
-  if(res.ok){
-    progress.value = await res.json()
+    if(res.ok){
+      progress.value = await res.json()
+    }
   }
 }
 

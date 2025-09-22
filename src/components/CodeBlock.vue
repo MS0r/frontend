@@ -2,9 +2,9 @@
 <template>
   <div class="code-box">
     <pre><code>{{ code }}</code></pre>
-    <button @click="runCode">Ejecutar</button>
-    <button @click="copy">Copiar</button>
-    <pre v-if="output" class="output">{{ output }}</pre>
+    <button @click="runCode" id="execute">Ejecutar</button>
+    <button @click="copyCode" id="copy">Copiar</button>
+    <pre v-show="output" class="output">{{ output }}</pre>
   </div>
 </template>
 
@@ -13,9 +13,18 @@ import { useRoute } from 'vue-router';
 import { compileErlang } from '@/composables/compileErlang';
 import { ref, watch } from 'vue';
 
-const output = ref('');
+const output = ref(null);
 const props = defineProps(['code'])
 const route = useRoute();
+
+async function copyCode() {
+  try{
+    await navigator.clipboard.writeText(editorInstance.getValue());
+    alert('Código copiado al portapapeles');
+  } catch (err) {
+    alert('Error al copiar el código: ' + err);
+  }
+}
 
 async function runCode(){
   try{
@@ -23,7 +32,7 @@ async function runCode(){
     if(result.status === "ok"){
       output.value = result.result || 'Sin salida';
     } else if (result.status === "error") {
-      output.value = 'Error: ' + result.reason;
+      output.value = `Error: ${result.reason}`;
     }
   } catch (error) {
     console.error(error);

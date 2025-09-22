@@ -4,7 +4,7 @@
 
     <div class="editor-toolbar">
       <button @click="run">Ejecutar</button>
-      <button>Compartir</button>
+      <!-- <button>Compartir</button> -->
     </div>
 
     <div class="editor-main">
@@ -47,16 +47,7 @@ onMounted(() => {
     },
   });
 
-  monaco.editor.defineTheme('erlangFunctions', {
-  base: 'vs-dark',
-  inherit: true,
-  rules: [
-    { token: 'function.name', foreground: 'FFCC00', fontStyle: 'bold' }
-  ]
-  });
-  
-
-  editorInstance = monaco.editor.create(editorContainer.value, {
+    editorInstance = monaco.editor.create(editorContainer.value, {
     value: `% hello world program
 -module(helloworld).
 -export([start/0]).
@@ -65,16 +56,23 @@ start() ->
     io:format("Hello, world!~n").`,
     language: 'erlang',
     theme: 'vs-dark',
-    automaticLayout: true,
+    minimap: { enabled: false }, // Hide minimap
+    lineNumbersMinChars: 2,      // Make line numbers column smaller
+    lineNumbers: "on",           // Show line numbers
+    fontSize: 14,  
+    wordWrap: 'on', // Enable word wrap
+    scrollbar: {
+      vertical: 'auto', // Hide vertical scrollbar
+      horizontal: 'auto', // Hide horizontal scrollbar
+      alwaysConsumeMouseWheel: false,
+    }
   });
-
   
 });
 
 const run = async () => {
   try {
     const code = editorInstance.getValue();
-    console.log("enviando")
     const result = await compileErlang(code);
     if(result.status === "ok"){
       output.value = result.result || 'Sin salida';
@@ -90,7 +88,7 @@ const run = async () => {
 
 <style scoped>
 .editor-layout {
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -109,23 +107,25 @@ const run = async () => {
   gap: 1rem;
 }
 
-
 .editor-main {
   flex: 1;
   display: flex;
   background: #dcdcdc;
   gap: 1rem;
-  padding: 1rem;
+  overflow: hidden; /* contain scrollbars inside editor-box */
 }
 
 .editor-box {
+  width: 50%;
   background: #1e1e1e;
   color: white;
   flex: 1;
-  padding: 1rem;
-  overflow: auto;
+  overflow-y: hidden; /* only vertical scrollbar for content */
+  overflow-x: hidden; /* hide horizontal scroll */
   font-family: monospace;
   font-size: 14px;
+  margin-bottom: 1rem;
+  margin-left: 1rem;
 }
 
 .output {

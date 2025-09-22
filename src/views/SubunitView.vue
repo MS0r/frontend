@@ -53,37 +53,36 @@ import { useRoute, useRouter } from 'vue-router'
 import CodeBlock from '@/components/CodeBlock.vue'
 import { ref, watch } from 'vue'
 import { useCourseStore } from '@/stores/courseStore.js'
-import MarkdownIt from 'markdown-it'
 
-const md = new MarkdownIt()
 const props = defineProps(['subunit'])
+const emit = defineEmits(['quizSuccess'])
 
 const userAnswers = ref([])
 const result = ref('')
 const route = useRoute()
 const router = useRouter()
 const store = useCourseStore()
+const API_VITE_URL = import.meta.env.VITE_API_URL
 
-function goToSubunit(offset) {
+async function goToSubunit(offset) {
+  console.log(route.params)
   const courseId = route.params.courseId
   let unitOrder = parseInt(route.params.unitOrder)
   let subunitOrder = parseInt(route.params.subunitOrder)
 
-  store.fetchCourse(courseId)
+  await store.fetchCourse(courseId)
   let newSubunitOrder = subunitOrder + offset
 
   const actualUnit = store.units.find(u => u.order === unitOrder)
   const subunitCount = actualUnit.subunits.length  
 
   if (newSubunitOrder < 1) {
-    // Optionally, go to previous unit's last subunit if available
     if(unitOrder - 1 > 0){
       router.push(`/course/${courseId}/unit/${unitOrder - 1}/exercise/`)
     }
     return
   }
   if (newSubunitOrder > subunitCount) {
-    // Optionally, go to next unit's first subunit if available
     router.push(`/course/${courseId}/unit/${unitOrder}/exercise/`)
     return
   }
@@ -107,13 +106,14 @@ async function checkAnswers() {
     const token = localStorage.getItem('token')
     if(token){
       const quiz_id = props.subunit.quiz.id
-      await fetch(`http://localhost:8080/api/quiz/${quiz_id}/success`, {
+      await fetch(`${API_VITE_URL}/quiz/${quiz_id}/success`, {
         method: 'POST',
         headers: {
           'Authorization': `Token ${token}`,
           'Content-Type': 'application/json'
         }
       })
+      emit('quizSuccess')
     }
   }
 }
@@ -122,10 +122,6 @@ watch(() => route.fullPath, () => {
   userAnswers.value = []
   result.value = ''
 })
-
-function renderMarkdown(text) {
-  return md.render(text)
-}
 </script>
 
 <style scoped>
@@ -191,5 +187,10 @@ function renderMarkdown(text) {
   margin-top: 1rem;
   font-weight: bold;
   color: #33355e; /* matches link color */
+}
+
+label{
+  display: flex;
+  width: 100%;
 }
 </style>

@@ -32,16 +32,17 @@ import Header from "@/components/Header.vue";
 
 const searchQuery = ref("");
 const filteredQuestions = ref([]);
+const API_VITE_URL = import.meta.env.VITE_API_URL
 
 const fetchQuestions = async () => {
-  const res = await fetch("http://localhost:8080/api/forum/questions");
+  const res = await fetch(`${API_VITE_URL}/forum/questions`);
   const results = await res.json();
   filteredQuestions.value = results; // default list
 }
 
 const performSearch = async () => {
   if(searchQuery.value){
-    const res = await fetch(`http://localhost:8080/api/forum/questions?s=${searchQuery.value}`);
+    const res = await fetch(`${API_VITE_URL}/forum/questions?s=${searchQuery.value}`);
     const results = await res.json();
     filteredQuestions.value = results;
   }
@@ -85,17 +86,41 @@ onMounted(fetchQuestions);
 
 .right-sidebar {
   background-color: #f3f3f3;
-  display: flex;
   justify-content: center;
-  padding: 20px;
 }
 
-.create-btn {
+/* .create-btn {
   background-color: white;
   border: 1px solid #ccc;
-  padding: 10px 15px;
+  display: flex;
   border-radius: 8px;
   cursor: pointer;
+  justify-content: center;
   height: 5%;
+  margin-top: 15px;
+  margin-left: 15px;
+
+} */
+
+.create-btn {
+  display: block;
+  text-align: center;
+  padding: 12px;
+  margin: 20px auto;
+  background-color: white;
+  color: black;
+  font-weight: 500;
+  font-size: 1em;
+  border: 1px solid transparent;
+  transition: background-color 0.25s, border-color 0.25s;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 80%;
 }
+
+.create-btn:hover {
+  background-color: #e0e0e0;
+  border-color: #646cff;
+}
+
 </style>

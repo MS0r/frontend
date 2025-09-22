@@ -8,7 +8,8 @@ export function useAuth() {
     if (!token) return;
 
     try {
-      const res = await fetch('http://localhost:8080/api/user', {
+      const API_VITE_URL = import.meta.env.VITE_API_URL
+      const res = await fetch(`${API_VITE_URL}/user`, {
         headers: {
           'Authorization': `Token ${token}`,
         },

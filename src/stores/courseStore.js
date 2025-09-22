@@ -22,8 +22,9 @@ export const useCourseStore = defineStore('course', {
         },
         async fetchCourse(courseId) {
             const loaded = this.loadFromCache(courseId)
+            const API_VITE_URL = import.meta.env.VITE_API_URL
             if (!loaded) {
-                const res = await fetch(`http://localhost:8080/api/course/${courseId}/units`)
+                const res = await fetch(`${API_VITE_URL}/course/${courseId}/units`)
                 this.units = await res.json()
 
                 localStorage.setItem(`course:${courseId}`, JSON.stringify({

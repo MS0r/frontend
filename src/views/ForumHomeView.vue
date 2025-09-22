@@ -7,12 +7,19 @@
         :key="q.id"
         class="question-item"
       >
+        <!-- Stats column -->
         <div class="question-stats">
-          <span>{{ q.upvote_count }} 👍</span>
-          <span>{{ q.downvote_count }} 👎</span>
-          <span>{{ q.answer_count }} 💬</span>
+          <div class="stat">
+            <span class="stat-number">{{ q.upvote_count - q.downvote_count }}</span>
+            <span class="stat-label">votos</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">{{ q.answer_count }}</span>
+            <span class="stat-label">respuestas</span>
+          </div>
         </div>
 
+        <!-- Info column -->
         <div class="question-info">
           <router-link
             :to="{ name: 'forum-question', params: { questionId: q.id } }"
@@ -34,50 +41,82 @@
 </template>
 
 <script setup>
-const props = defineProps(['questions','searchQuery'])
+const props = defineProps(["questions", "searchQuery"]);
 </script>
 
 <style scoped>
 .section-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Question container */
+.question-item {
+  display: flex;
+  gap: 20px;
+  border-top: 1px solid #ddd;
+  padding: 20px 0;
+}
+
+/* Stats (votes, answers) */
+.question-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  font-size: 1rem;
+  color: #444;
+  text-align: center;
+}
+
+.stat {
+  margin-bottom: 10px;
+}
+
+.stat-number {
   font-size: 1.5rem;
   font-weight: bold;
-  margin-bottom: 15px;
+  display: block;
 }
 
-.question-item {
-  border-top: 1px solid #ccc;
-  padding: 10px 0;
+.stat-label {
+  font-size: 0.9rem;
+  color: #777;
 }
 
-.question-stats {
-  font-size: 0.85rem;
-  color: gray;
-  display: flex;
-  gap: 15px;
-  margin-bottom: 5px;
+/* Question info */
+.question-info {
+  flex: 1;
 }
 
 .question-title {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: bold;
   color: #1a73e8;
   text-decoration: none;
 }
 
+.question-title:hover {
+  text-decoration: underline;
+}
+
 .question-description {
-  margin: 0;
+  font-size: 1.1rem;
   color: #555;
+  margin: 5px 0 10px;
 }
 
 .question-tags {
-  margin-top: 5px;
+  margin-top: 8px;
 }
 
 .tag {
   background: #eef;
-  padding: 4px 8px;
-  margin-right: 5px;
-  border-radius: 5px;
-  font-size: 0.75rem;
+  padding: 6px 10px;
+  margin-right: 6px;
+  border-radius: 6px;
+  font-size: 0.9rem;
 }
 </style>

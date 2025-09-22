@@ -20,15 +20,16 @@ const name = ref('')
 const email = ref('')
 const password = ref('')
 const router = useRouter()
+const API_VITE_URL = import.meta.env.VITE_API_URL
 
-function register() {
+async function register() {
   // Replace with real registration logic
-  const res = fetch("http://localhost:8080/api/auth/register", {
+  const res = await fetch(`${API_VITE_URL}/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ user: { name: name.value, username: email.value, password: password.value } })
+    body: JSON.stringify({ user: { username: name.value, email: email.value, password: password.value } })
   });
 
   if (res.ok) {
@@ -36,7 +37,6 @@ function register() {
   } else {
     alert('Registration failed');
   }
-  console.log('Registering:', name.value, email.value, password.value)
 }
 </script>
 
@@ -58,6 +58,8 @@ input {
   border: 1px solid #aaa;
   border-radius: 4px;
   font-size: 1rem;
+  color: black;
+  background-color: white;
 }
 
 button {

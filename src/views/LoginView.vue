@@ -18,10 +18,11 @@ import { useRouter } from 'vue-router';
 const email = ref('')
 const password = ref('')
 const router = useRouter();
+const API_VITE_URL = import.meta.env.VITE_API_URL
 
 const login = async () => {
   // Replace with real login logic
-  const res = await fetch("http://localhost:8080/api/auth/login", {
+  const res = await fetch(`${API_VITE_URL}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -58,6 +59,8 @@ input {
   border: 1px solid #aaa;
   border-radius: 4px;
   font-size: 1rem;
+  color: black;
+  background-color: white;
 }
 
 button {

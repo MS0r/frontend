@@ -14,15 +14,18 @@ import AskQuestionView from '@/views/AskQuestionView.vue'
 const routes = [
   {
     path: '/',
-    redirect: '/course/1/unit/1/subunit/1'
+    redirect: '/course/1/unit/1/subunit/1',
+    name:"main"
   },
   {
     path: '/course/:courseId/unit/:unitOrder/subunit/:subunitOrder',
     component: CourseLayout,
+    name:"course",
     children: [
       {
         path: '',
         component: SubunitView,
+        name:"course-subunit",
         props: true
       }
     ]
@@ -30,29 +33,35 @@ const routes = [
   {
     path: '/course/:courseId/unit/:unitOrder/exercise',
     component: CourseLayout,
+    name:"course-exercise",
     children: [
       {
         path: '',
         component: UnitExerciseView,
+        name:"exercise",
         props: true
       }
     ]
   },
   {
     path: '/editor',
-    component: EditorLayout
+    component: EditorLayout,
+    name:"editor"
   },
   {
     path: '/login',
-    component: LoginView
+    component: LoginView,
+    name:"login"
   },
   {
     path: '/register',
-    component: RegisterView
+    component: RegisterView,
+    name:"register"
   },
   {
     path: '/forum',
     component: ForumLayout,
+    name:"forum",
     children: [
       {
         path: '',

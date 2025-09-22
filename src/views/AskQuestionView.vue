@@ -26,6 +26,7 @@ const title = ref("");
 const body = ref("");
 const tags = ref("");
 const router = useRouter();
+const API_VITE_URL = import.meta.env.VITE_API_URL
 
 const goBack = () => {
   if (window.history.length > 1) {
@@ -36,8 +37,8 @@ const goBack = () => {
 };
 
 const submitQuestion = async () => {
-    const token = localStorage.getItem('token');
-  await fetch("http://localhost:8080/api/forum/questions", {
+  const token = localStorage.getItem('token');
+  await fetch(`${API_VITE_URL}/forum/questions`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Token ${token}` },
     body: JSON.stringify({question : {
@@ -64,6 +65,11 @@ const submitQuestion = async () => {
   border-radius: 6px;
   cursor: pointer;
   margin-bottom: 15px;
+}
+
+.back-btn:hover {
+  background-color: #e0e0e0;
+  border-color: #646cff;
 }
 
 form {
