@@ -197,6 +197,11 @@ describe('Components', () => {
 
   it('CourseLayout mounts with router and fetches course title and units without throwing', async () => {
     localStorage.setItem('token', 'tok_123')
+    const userResp = {
+      username: 'testuser',
+      quiz_passes: { 0: { id: 1, user_id: 1, quiz_id: 3 } },
+      submissions: { 0: { exercise_id: 1 } }
+    }
     global.fetch = vi.fn((url) => {
       if (url.includes('/course/1') && !url.endsWith('/units')) {
         return Promise.resolve({
@@ -215,6 +220,11 @@ describe('Components', () => {
             total_exercises: 10,
             completed_exercises: 3
           })
+        })
+      } else if (url.includes('/user')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(userResp)
         })
       }
 

@@ -189,15 +189,24 @@ describe("Views Tests", () => {
       "user": "user1"
     }
 
+    const votes = [
+      { id: 1, vote: 'upvote', question_id: 2 },
+      { id: 2, vote: 'downvote', answer_id: 2 },
+      {id: 3, vote: 'upvote', answer_id: 2 }
+    ]
+
 
     global.fetch = vi.fn((url, opts) => {
       const body = opts?.body ? JSON.parse(opts.body) : null
       if (url.includes(`${API_VITE_URL}/forum/questions/view`)) {
+
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve(question)
         })
+
       } else if (url.includes(`${API_VITE_URL}/forum/vote/answer`)) {
+
         if (body?.vote === "upvote") {
           question.answers[0].upvote_count += 1
         } else if (body?.vote === "downvote") {
@@ -207,7 +216,9 @@ describe("Views Tests", () => {
           ok: true,
           json: () => Promise.resolve(question.answers[0])
         })
-      } else if (url.includes(`${API_VITE_URL}/forum/vote`)) {
+
+      } else if (url.includes(`${API_VITE_URL}/forum/vote`) && opts?.method === 'POST') {
+
         if (body?.vote === "upvote") {
           question.upvote_count += 1
         } else if (body?.vote === "downvote") {
@@ -217,11 +228,19 @@ describe("Views Tests", () => {
           ok: true,
           json: () => Promise.resolve(question)
         })
+
+      } else if (url.includes(`${API_VITE_URL}/forum/vote`)){
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(votes)
+        })
       } else if (url.includes(`${API_VITE_URL}/forum/questions`) && opts?.method === 'POST') {
+
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve(answer)
         })
+
       }
     })
 
