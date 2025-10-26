@@ -16,7 +16,8 @@ jobs:
     services:
       db:
         image: postgres
-        ports: 5432:5432
+        ports: 
+          - "5432:5432"
         env:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: 123
@@ -28,7 +29,8 @@ jobs:
           --health-retries 5
       api-server:
         image: mickael279/api-gateway-erlang:latest
-        ports: 8000:8000
+        ports: 
+          - "8000:8000"
         env:
           APP_ENV: prod
           DATABASE_URL: postgresql+asyncpg://user:123@db/mydb
