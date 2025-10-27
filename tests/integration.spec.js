@@ -6,7 +6,7 @@ const API_VITE_URL = import.meta.env.VITE_API_URL
 const {body : bod} = await probe(`${API_VITE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user: { username: "email@email1.com", password: "password" } })
+      body: JSON.stringify({ user: { username: "user1@example.com", password: "password1" } })
     })
 const TEST_TOKEN = bod.token
 
